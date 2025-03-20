@@ -1,0 +1,183 @@
+call Display_Menu()
+
+function primes_SoA(limit)
+	print "Sieve of Atkin started..."
+    Dim marked(limit + 1) fill false
+    for x = 1 to (sqrt(limit) + 1)
+        for y = 1 to (sqrt(limit) + 1)
+            n = (4 * (x*x)) + (y*y)
+            if (n <= limit) and ((n mod 12 = 1) or (n mod 12 = 5)) then 
+                marked[n] = not marked[n]
+            end if
+            n = (3 * (x*x)) + (y*y)
+            if (n <= limit) and (n mod 12 = 7) then
+                marked[n] = not marked[n]
+            end if
+            n = (3 * (x*x)) - (y*y)
+            if (x > y) and (n <= limit) and (n mod 12 = 11) then
+                marked[n] = not marked[n]
+            end if
+        next y
+     next x        
+     for n = 5 to (sqrt(limit) + 1)
+         if marked[n] = true then
+             k = 1
+             while k * (n*n) <= limit
+                 marked[k * (n*n)] = false
+                 k = k + 1
+             end while
+         end if
+     next n    
+    cnt = 0 
+    for i = 4 to limit
+        if marked[i] = true then
+			cnt = cnt + 1
+    	end if
+    next i       
+    Dim primes(cnt + 2)
+    primes[0] = 2
+    primes[1] = 3
+    c = 2
+    for i = 4 to limit
+        if marked[i] = true then
+            primes[c] = i
+            c = c + 1
+        end if   
+    next i    
+    return primes    
+end function
+
+function primes_SoE(n)
+    print "Sieve of Eratosthenes started..."
+    Dim marked(n+1) fill true
+    p = 2
+    while (p * p <= n)
+        if marked[p] = true then
+            for i = p * p to n step p
+                marked[i] = false
+            next i
+        end if
+        p = p + 1
+    end while
+    cnt = 0 
+    for i = 4 to n
+        if marked[i] = true then
+			cnt = cnt + 1
+    	end if
+    next i       
+    Dim primes(cnt + 2)
+    primes[0] = 2
+    primes[1] = 3
+    c = 2
+    for i = 4 to n
+        if marked[i] = true then
+            primes[c] = i
+            c = c + 1
+        end if   
+    next i
+    return primes
+end function
+
+function primes_SoS(n)
+    print "Sieve of Sundaram started..."
+    Dim nNew = int((n - 1) / 2)
+    Dim marked(nNew + 1) fill false 
+    for i = 1 to nNew + 1
+        j = i
+        while((i + j + 2 * i * j) <= nNew)
+            marked[i + j + 2 * i * j] = true
+            j = j + 1
+        end while
+    next i
+    cnt = 0 
+    for i = 1 to nNew
+        if marked[i] = false then
+			cnt = cnt + 1
+    	end if
+    next i       
+    Dim primes(cnt + 1)
+    primes[0] = 2
+    c = 1
+    for i = 1 to nNew
+        if marked[i] = false then
+            primes[c] = 2 * i + 1
+            c = c + 1
+        end if   
+    next i
+    return primes
+end function
+
+subroutine primes_print(list)
+	print "The list of primes is:"
+	for p = 0 to (length(list) - 1)
+    	print list[p]; " ";
+	next p
+	print " "
+end subroutine
+
+subroutine Display_Menu()
+	print "Welcome to the BASIC-256 Prime Sieve Tester"
+	print
+	max = prompt("Enter number range for calculation (max is 1 million).")
+	print "Searching for primes between 0 and "; max; "."
+	print
+    print "Select the desired Prime Sieve for calculation."
+    print
+    print "Atkin              : 1"
+    print "Eratosthenes: 2"
+    print "Sundaram:      3"
+    print
+    CalcID$ = prompt("Enter sieve number: ")
+    call Calculate_Values(CalcID$, int(max))
+    call Repeat()
+end subroutine
+
+subroutine Calculate_Values(CalcID$, max)
+  begin case
+    case CalcID$ = 1
+    	print "Calcluaiton method: Sieve of Atkin"
+		start = msec()
+		result = primes_SoA(max)
+		stop = msec()
+		print "Completed!"
+		print "It took "; (stop-start)/1000; " seconds."
+		print "The number of primes is "; length(result)
+		#call primes_print(result)
+		print
+	case CalcID$ = 2
+		print "Calcluaiton method: Sieve of Eratosthenes"
+		start = msec()
+		result = primes_SoE(max)
+		stop = msec()
+		print "Completed!"
+		print "It took "; (stop-start)/1000; " seconds."
+		print "The number of primes is "; length(result)
+		#call primes_print(result)
+		print
+	case CalcID$ = 3
+		print "Calcluaiton method: Sieve of Sundaram"
+		start = msec()
+		result = primes_SoS(max)
+		stop = msec()
+		print "Completed!"
+		print "It took "; (stop-start)/1000; " seconds."
+		print "The number of primes is "; length(result)
+		#call primes_print(result)
+		print
+	case CalcID$ = 4
+		for i = 1 to 3
+			call Calculate_Values(i, int(max))
+		next i
+	end case
+end subroutine
+		
+subroutine Repeat()
+  newCalc$ = prompt( "Enter 'y' for another calculation. Press any other key to exit: ")
+  if newCalc$ = "y" then
+    cls
+    call Display_Menu()
+  else
+    cls
+    end
+  end if
+end subroutine

@@ -1,0 +1,70 @@
+include "pkg-prime-sieves.kbs"
+
+call Display_Menu()
+
+subroutine Display_Menu()
+	print "Welcome to the BASIC-256 Prime Sieve Tester"
+	print
+	max = prompt("Enter number range for calculation (max is 1 million).")
+	print "Searching for primes between 0 and "; max; "."
+	print
+    print "Select the desired Prime Sieve for calculation."
+    print
+    print "Atkin              : 1"
+    print "Eratosthenes: 2"
+    print "Sundaram:      3"
+    print
+    CalcID$ = prompt("Enter sieve number: ")
+    call Calculate_Values(CalcID$, int(max))
+    call Repeat()
+end subroutine
+
+subroutine Calculate_Values(CalcID$, max)
+  begin case
+    case CalcID$ = 1
+    	print "Calculaiton method: Sieve of Atkin"
+		start = msec()
+		result = primes_SoA(max)
+		stop = msec()
+		print "Completed!"
+		print "It took "; (stop-start)/1000; " seconds."
+		print "The number of primes is "; length(result)
+		#call primes_print(result)
+		print
+	case CalcID$ = 2
+		print "Calculation method: Sieve of Eratosthenes"
+		start = msec()
+		result = primes_SoE(max)
+		stop = msec()
+		print "Completed!"
+		print "It took "; (stop-start)/1000; " seconds."
+		print "The number of primes is "; length(result)
+		#call primes_print(result)
+		print
+	case CalcID$ = 3
+		print "Calculation method: Sieve of Sundaram"
+		start = msec()
+		result = primes_SoS(max)
+		stop = msec()
+		print "Completed!"
+		print "It took "; (stop-start)/1000; " seconds."
+		print "The number of primes is "; length(result)
+		#call primes_print(result)
+		print
+	case CalcID$ = 4
+		for i = 1 to 3
+			call Calculate_Values(i, int(max))
+		next i
+	end case
+end subroutine
+		
+subroutine Repeat()
+  newCalc$ = prompt( "Enter 'y' for another calculation. Press any other key to exit: ")
+  if newCalc$ = "y" then
+    cls
+    call Display_Menu()
+  else
+    cls
+    end
+  end if
+end subroutine
